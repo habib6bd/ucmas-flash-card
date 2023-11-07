@@ -1,23 +1,20 @@
 import { useState, useEffect } from "react";
 import "./index.css";
-import ucmas_logo_20231107 from "../src/assets/ucmas_logo_20231107";
+import ucmasLogo from '../public/ucmas_logo_20231107.jpg';
 
 function App() {
   const [inputValue, setInputValue] = useState("");
   const [numbersLength, setNumbersLength] = useState("");
   const [numbers, setNumbers] = useState([]);
   const [currentNumberIndex, setCurrentNumberIndex] = useState(0);
-  const [showSum, setShowSum] = useState(null);
   const [error, setError] = useState("");
   const [lengthError, setLengthError] = useState("");
   const [timer, setTimer] = useState(0);
-  const [showNumberPopup, setShowNumberPopup] = useState(false); // State to control the number pop-up
   const [currentNumberSum, setCurrentNumberSum] = useState(null);
   const [showFullScreen, setShowFullScreen] = useState(false); // State to control the full-screen view
   const [showAnswer, setShowAnswer] = useState(false); // State to control displaying the answer
 
-
-  console.log("numbersLength", numbersLength);
+  // console.log("numbersLength", numbersLength);
 
   // Function to generate random numbers based on the input
   const generateNumbers = () => {
@@ -28,19 +25,18 @@ function App() {
       setError("Please enter a single digit");
       return;
     }
+    const length = parseInt(numbersLength, 10); // Parse numbersLength as an integer
 
-    if (
-      numbersLength.split("").length > 3 ||
-      numbersLength.split("").length < 2
-    ) {
+    if (isNaN(length) || length < 10 || length > 100) {
       setLengthError("Please enter a number between 10 to 100");
       return;
     }
 
+
     const digits = Number(inputValue.trim());
-    const length = Number(numbersLength.trim());
-    console.log("length", length);
-    setNumbersLength(length);
+    // const length = Number(numbersLength.toString());
+    // console.log("length", length);
+    setNumbersLength(length.toString());
     const generatedNumbers = [];
     for (let i = 0; i < length; i++) {
       let min = 1,
@@ -54,15 +50,14 @@ function App() {
       }
       const randomNum = Math.floor(min + Math.random() * (max - min + 1));
       // const randomNum = Math.round(Math.random() * (10**digits));
-      console.log(randomNum);
+      // console.log(randomNum);
       generatedNumbers.push(randomNum);
     }
     setNumbers(generatedNumbers);
     setCurrentNumberIndex(0);
-    setShowSum(null);
-    setInputValue(0);
     setShowFullScreen(true);
     setShowAnswer(false); // Hide the answer when new numbers are generated
+
   };
 
   // Function to calculate the sum of numbers
@@ -81,8 +76,8 @@ function App() {
   }, [currentNumberIndex, numbersLength, timer]);
 
   return (
-    <div className="h-screen flex flex-col justify-center items-center bg-gray-200">
-      <img src={ucmas_logo_20231107} alt="Logo" className="mb-4" />
+    <div className="h-screen flex flex-col justify-center items-center bg-white">
+      <img src={ucmasLogo} alt="Logo" className="w-32 h-32 absolute top-0 left-0 mt-4 ml-4" />
 
     <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
       <div>
@@ -102,7 +97,7 @@ function App() {
           className="border-2 border-indigo-600"
           type="text"
           value={numbersLength}
-          onChange={(e) => setNumbersLength(e.target.value)}
+          onChange={(e) => setNumbersLength(e.target.value.toString())}
         />
       </div>
     </div>
@@ -110,20 +105,20 @@ function App() {
 
     <div className="flex justify-center gap-5 w-full mb-4">
       <button
-        className="button"
-        onClick={() => setTimer(5000)}
+        className="button hover:bg-blue-500"
+        onClick={() => setTimer(1000)}
       >
         Slow
       </button>
       <button
-        className="button"
-        onClick={() => setTimer(2000)}
+        className="button hover:bg-blue-500"
+        onClick={() => setTimer(500)}
       >
         Medium
       </button>
       <button
-        className="button"
-        onClick={() => setTimer(1000)}
+        className="button hover:bg-blue-500"
+        onClick={() => setTimer(250)}
       >
         Fast
       </button>
@@ -131,7 +126,7 @@ function App() {
 
     <div className="flex justify-center">
       <button
-        className="button"
+        className="button hover:bg-blue-500"
         onClick={generateNumbers}
       >
         Start
@@ -139,28 +134,28 @@ function App() {
     </div>
     {showFullScreen && (
       <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-60 z-50">
-        <div className="bg-white p-8 rounded-lg shadow-lg">
-          <h2 className="text-9xl text-center font-bold mb-4 m-30">
+        <div className="bg-white rounded-lg shadow-lg custom-padding">
+          <h2 className="text-[300px] text-center font-bold mb-4 m-30">
             {numbers[currentNumberIndex]}
           </h2>
           {!showAnswer && (
             <button
-              className="button block mx-auto mb-4"
+              className="button hover:bg-blue-500 block mx-auto mb-4"
               onClick={() => {
                 calculateSum();
                 setShowAnswer(true);
               }}
             >
-              Show Answer
+              Answer
             </button>
           )}
           {showAnswer && (
-            <p className="text-9xl text-center font-bold mb-4">
-              = {currentNumberSum}
+            <p className="text-[300px] text-center font-bold mb-4">
+              {currentNumberSum}
             </p>
           )}
           <button
-            className="button block mx-auto"
+            className="button hover:bg-blue-500 block mx-auto"
             onClick={() => setShowFullScreen(false)}
           >
             Close
