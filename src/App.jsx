@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import "./index.css";
+import ucmas_logo_20231107 from "../src/assets/ucmas_logo_20231107";
 
 function App() {
   const [inputValue, setInputValue] = useState("");
@@ -10,6 +11,11 @@ function App() {
   const [error, setError] = useState("");
   const [lengthError, setLengthError] = useState("");
   const [timer, setTimer] = useState(0);
+  const [showNumberPopup, setShowNumberPopup] = useState(false); // State to control the number pop-up
+  const [currentNumberSum, setCurrentNumberSum] = useState(null);
+  const [showFullScreen, setShowFullScreen] = useState(false); // State to control the full-screen view
+  const [showAnswer, setShowAnswer] = useState(false); // State to control displaying the answer
+
 
   console.log("numbersLength", numbersLength);
 
@@ -55,12 +61,14 @@ function App() {
     setCurrentNumberIndex(0);
     setShowSum(null);
     setInputValue(0);
+    setShowFullScreen(true);
+    setShowAnswer(false); // Hide the answer when new numbers are generated
   };
 
   // Function to calculate the sum of numbers
   const calculateSum = () => {
     const sum = numbers.reduce((acc, num) => acc + num, 0);
-    setShowSum(sum);
+    setCurrentNumberSum(sum);
   };
 
   useEffect(() => {
@@ -73,63 +81,94 @@ function App() {
   }, [currentNumberIndex, numbersLength, timer]);
 
   return (
-    <div className="w-screen h-screen flex justify-center items-center">
-      {/* <h1 className="first-letter:text-3xl font-bold underline">
-        Number Sum App
-      </h1> */}
+    <div className="h-screen flex flex-col justify-center items-center bg-gray-200">
+      <img src={ucmas_logo_20231107} alt="Logo" className="mb-4" />
 
-      <div className="grid grid-rows-12 grid-flow-col gap-4 justify-center items-center block">
-        <div className="">
-          <label>Enter Digit: </label>
-          <input
-            className="border-solid border-2 border-indigo-600"
-            type="text"
-            value={inputValue}
-            onChange={(e) => setInputValue(e.target.value)}
-          />
-          <p>{error}</p>
-        </div>
-
-        <div className="">
-          <label>Enter Row: </label>{" "}
-          <input
-            className="border-solid border-2 border-indigo-600"
-            type="text"
-            value={numbersLength}
-            onChange={(e) => setNumbersLength(e.target.value)}
-          />
-        </div>
-      </div>
-      <p>{lengthError}</p>
-      
-      <div className="flex justify-center gap-5 w-full block">
-        <button className="button" onClick={() => setTimer(5000)}>
-          Slow
-        </button>
-        <button className="button" onClick={() => setTimer(2000)}>
-          Medium
-        </button>
-        <button className="button" onClick={() => setTimer(1000)}>
-          Fast
-        </button>
-      </div>
-
-      <div className="flex justify-center">
-        <button className="button" onClick={generateNumbers}>
-          Start
-        </button>
+    <div className="grid grid-cols-1 sm:grid-cols-2 gap-4 mb-4">
+      <div>
+        <label>Enter Digit: </label>
+        <input
+          className="border-2 border-indigo-600"
+          type="text"
+          value={inputValue}
+          onChange={(e) => setInputValue(e.target.value)}
+        />
+        <p className="text-red-500">{error}</p>
       </div>
 
       <div>
-        <p>Current Number: {numbers[currentNumberIndex]}</p>
-        {currentNumberIndex === numbersLength && (
-          <>
-            <button onClick={() => calculateSum()}>Show Sum</button>{" "}
-            <h3>{showSum}</h3>
-          </>
-        )}
+        <label>Enter Row: </label>{" "}
+        <input
+          className="border-2 border-indigo-600"
+          type="text"
+          value={numbersLength}
+          onChange={(e) => setNumbersLength(e.target.value)}
+        />
       </div>
     </div>
+    <p className="text-red-500">{lengthError}</p>
+
+    <div className="flex justify-center gap-5 w-full mb-4">
+      <button
+        className="button"
+        onClick={() => setTimer(5000)}
+      >
+        Slow
+      </button>
+      <button
+        className="button"
+        onClick={() => setTimer(2000)}
+      >
+        Medium
+      </button>
+      <button
+        className="button"
+        onClick={() => setTimer(1000)}
+      >
+        Fast
+      </button>
+    </div>
+
+    <div className="flex justify-center">
+      <button
+        className="button"
+        onClick={generateNumbers}
+      >
+        Start
+      </button>
+    </div>
+    {showFullScreen && (
+      <div className="fixed top-0 left-0 w-full h-full flex items-center justify-center bg-black bg-opacity-60 z-50">
+        <div className="bg-white p-8 rounded-lg shadow-lg">
+          <h2 className="text-9xl text-center font-bold mb-4 m-30">
+            {numbers[currentNumberIndex]}
+          </h2>
+          {!showAnswer && (
+            <button
+              className="button block mx-auto mb-4"
+              onClick={() => {
+                calculateSum();
+                setShowAnswer(true);
+              }}
+            >
+              Show Answer
+            </button>
+          )}
+          {showAnswer && (
+            <p className="text-9xl text-center font-bold mb-4">
+              = {currentNumberSum}
+            </p>
+          )}
+          <button
+            className="button block mx-auto"
+            onClick={() => setShowFullScreen(false)}
+          >
+            Close
+          </button>
+        </div>
+      </div>
+    )}
+  </div>
   );
 }
 
